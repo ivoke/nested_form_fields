@@ -75,7 +75,7 @@ module ActionView::Helpers
                              style: for_template ? 'display:none' : nil ) do
         nested_fields_wrapper(association_name, options[:wrapper_tag]) do
           fields_for_nested_model("#{name}[#{index_placeholder(association_name)}]",
-                                   association_name.to_s.classify.constantize.new,
+                                   @object.class.reflect_on_association(association_name).class_name.constantize.new,
                                    options.merge(for_template: true), block)
         end
       end
