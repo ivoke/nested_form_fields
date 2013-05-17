@@ -17,6 +17,7 @@ module ActionView::Helpers
       fields_options[:parent_builder] = self
       fields_options[:wrapper_tag] ||= :fieldset
       fields_options[:namespace] = fields_options[:parent_builder].options[:namespace]
+      fields_options[:class_name] ||= @object.class.reflect_on_association(record_name).class_name
 
       return fields_for_has_many_association_with_template(record_name, record_object, fields_options, block)
     end
@@ -61,7 +62,8 @@ module ActionView::Helpers
 
     def nested_model_template name, association_name, options, block
       for_template = self.options[:for_template]
-      
+      class_name = options[:class_name]
+
       # Render the outermost template in a script tag to avoid it from being submited with the form
       # Render all deeper nested templates as hidden divs as nesting script tags messes up the html.
       # When nested fields are added with javascript by using a template that contains nested templates,
@@ -75,7 +77,7 @@ module ActionView::Helpers
                              style: for_template ? 'display:none' : nil ) do
         nested_fields_wrapper(association_name, options[:wrapper_tag]) do
           fields_for_nested_model("#{name}[#{index_placeholder(association_name)}]",
-                                   @object.class.reflect_on_association(association_name).class_name.constantize.new,
+                                   class_name.constantize.new,
                                    options.merge(for_template: true), block)
         end
       end
