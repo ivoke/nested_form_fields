@@ -28,6 +28,6 @@ jQuery ->
     delete_association_field_name = $link.data('delete-association-field-name')
     $nested_fields_container = $link.parents(".nested_fields").first()
     $nested_fields_container.before "<input type='hidden' name='#{delete_association_field_name}' value='1' />"
-    $nested_fields_container.hide()
     $link.trigger('nested_fields_removed')
+    $nested_fields_container.hide()
     false
