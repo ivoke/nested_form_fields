@@ -19,7 +19,10 @@ jQuery ->
       $child.replaceWith($("<script id='#{$child.attr('id')}' type='text/html' />").html($child.html()))
 
     $template.before( $parsed_template )
-    $link.trigger('nested_fields_added')
+
+    event = jQuery.Event('nested_fields_added')
+    event.fields = $template.prev()
+    $link.trigger(event)
     false
 
 
@@ -28,6 +31,10 @@ jQuery ->
     delete_association_field_name = $link.data('delete-association-field-name')
     $nested_fields_container = $link.parents(".nested_fields").first()
     $nested_fields_container.before "<input type='hidden' name='#{delete_association_field_name}' value='1' />"
-    $link.trigger('nested_fields_removed')
+
+    event = jQuery.Event('nested_fields_removed')
+    event.fields = $nested_fields_container
+
+    $link.trigger(event)
     $nested_fields_container.hide()
     false
