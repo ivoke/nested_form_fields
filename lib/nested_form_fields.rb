@@ -51,11 +51,11 @@ module ActionView::Helpers
       output = ActiveSupport::SafeBuffer.new
       association.each do |child|
         output << nested_fields_wrapper(association_name, options[:wrapper_tag], html_options) do
-          fields_for_nested_model("#{name}[#{options[:child_index] || nested_child_index(name)}]", child, options, html_options, block)
+          fields_for_nested_model("#{name}[#{options[:child_index] || nested_child_index(name)}]", child, options, block)
         end
       end
 
-      output << nested_model_template(name, association_name, options, block)
+      output << nested_model_template(name, association_name, options, html_options, block)
       output
     end
 
@@ -102,7 +102,7 @@ module ActionView::Helpers
 
 
     def nested_fields_wrapper association_name, wrapper_element_type, html_options = {}
-      default_class = "nested_fields nested_#{association_path(association_name)}"
+      default_class = "TEST" #"nested_fields nested_#{association_path(association_name)}"
       html_options[:class] = default_class << (html_options[:class] ? " #{html_options[:class]}" : '')
 
       @template.content_tag wrapper_element_type, html_options do
