@@ -11,7 +11,7 @@ module ActionView::Helpers
 
   class FormBuilder
 
-    def nested_fields_for(record_name, record_object = nil, fields_options = {}, &block)
+    def nested_fields_for(record_name, record_object = nil, fields_options = {}, html_options = {}, &block)
       fields_options, record_object = record_object, nil if record_object.is_a?(Hash) && record_object.extractable_options?
       fields_options[:builder] ||= options[:builder]
       fields_options[:parent_builder] = self
@@ -19,7 +19,7 @@ module ActionView::Helpers
       fields_options[:namespace] = fields_options[:parent_builder].options[:namespace]
       fields_options[:class_name] ||= @object.class.reflect_on_association(record_name).class_name
 
-      return fields_for_has_many_association_with_template(record_name, record_object, fields_options, block)
+      return fields_for_has_many_association_with_template(record_name, record_object, fields_options, html_options, block)
     end
 
 
@@ -38,7 +38,7 @@ module ActionView::Helpers
 
     private
 
-    def fields_for_has_many_association_with_template(association_name, association, options, block)
+    def fields_for_has_many_association_with_template(association_name, association, options, html_options = {}, block)
       name = "#{object_name}[#{association_name}_attributes]"
       association = convert_to_model(association)
 
@@ -50,8 +50,8 @@ module ActionView::Helpers
 
       output = ActiveSupport::SafeBuffer.new
       association.each do |child|
-        output << nested_fields_wrapper(association_name, options[:wrapper_tag]) do
-          fields_for_nested_model("#{name}[#{options[:child_index] || nested_child_index(name)}]", child, options, block)
+        output << nested_fields_wrapper(association_name, options[:wrapper_tag], html_options) do
+          fields_for_nested_model("#{name}[#{options[:child_index] || nested_child_index(name)}]", child, options, html_options, block)
         end
       end
 
@@ -60,7 +60,7 @@ module ActionView::Helpers
     end
 
 
-    def nested_model_template name, association_name, options, block
+    def nested_model_template name, association_name, options, html_options = {}, block
       for_template = self.options[:for_template]
       class_name = options[:class_name]
 
@@ -75,7 +75,7 @@ module ActionView::Helpers
                              id: template_id(association_name),
                              class: for_template ? 'form_template' : nil,
                              style: for_template ? 'display:none' : nil ) do
-        nested_fields_wrapper(association_name, options[:wrapper_tag]) do
+        nested_fields_wrapper(association_name, options[:wrapper_tag], html_options) do
           fields_for_nested_model("#{name}[#{index_placeholder(association_name)}]",
                                    class_name.constantize.new,
                                    options.merge(for_template: true), block)
@@ -101,8 +101,11 @@ module ActionView::Helpers
     end
 
 
-    def nested_fields_wrapper association_name, wrapper_element_type
-      @template.content_tag wrapper_element_type, class: "nested_fields nested_#{association_path(association_name)}" do
+    def nested_fields_wrapper association_name, wrapper_element_type, html_options = {}
+      default_class = "nested_fields nested_#{association_path(association_name)}"
+      html_options[:class] = default_class << (html_options[:class] ? " #{html_options[:class]}" : '')
+
+      @template.content_tag wrapper_element_type, html_options do
         yield
       end
     end
