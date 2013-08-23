@@ -102,7 +102,7 @@ module ActionView::Helpers
 
 
     def nested_fields_wrapper association_name, wrapper_element_type, html_options = {}
-      default_class = "TEST" #"nested_fields nested_#{association_path(association_name)}"
+      default_class = "nested_fields nested_#{association_path(association_name)}"
       html_options[:class] = default_class << (html_options[:class] ? " #{html_options[:class]}" : '')
 
       @template.content_tag wrapper_element_type, html_options do
