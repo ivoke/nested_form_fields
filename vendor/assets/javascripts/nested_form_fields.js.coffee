@@ -1,6 +1,6 @@
 jQuery ->
 
-  $('body').on 'click', '.add_nested_fields_link', ->
+  $(document).on 'click', '.add_nested_fields_link', ->
     $link = $(this)
     association_path = $link.data('association-path')
     $template = $("##{association_path}_template")
@@ -26,7 +26,7 @@ jQuery ->
     false
 
 
-  $('body').on 'click', '.remove_nested_fields_link', ->
+  $(document).on 'click', '.remove_nested_fields_link', ->
     $link = $(this)
     delete_association_field_name = $link.data('delete-association-field-name')
     $nested_fields_container = $link.parents(".nested_fields").first()
